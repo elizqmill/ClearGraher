@@ -7,11 +7,9 @@ on:
                 description: ClearGraher version bruh
                 type: string
                 default: '0.0.0'
-            cleargraher-changes:
-                description: Tell me bruh
-                type: string
-                default: 'ClearGraher build'
 run-name: Building ClearGraher ${{inputs.cleargraher-version}}
+permissions:
+    contents: write
 jobs:
     apk:
         name: Generate APK
@@ -52,31 +50,50 @@ jobs:
                     mv $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore.old $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore
                     rm $GITHUB_WORKSPACE/gradle.properties
                     mv $GITHUB_WORKSPACE/gradle.properties.old $GITHUB_WORKSPACE/gradle.properties
-            -   name: Verify APK exists
-                id: locate_apk
+            -   name: Prepare APK and release notes
+                id: prep
+                env:
+                    CLEARGRAHER_VERSION: ${{inputs.cleargraher-version}}
                 run: |
-                    APK_PATH="$GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/app.apk"
-                    if [ ! -f "$APK_PATH" ]; then
-                       echo "Expected APK not found at $APK_PATH — listing actual output tree:" >&2
-                       find $GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs -type f >&2
+                    set -euo pipefail
+                    APK_DIR="$GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone"
+                    APK=$(ls "$APK_DIR"/ClearGraher-*.apk 2>/dev/null | head -1)
+                    if [ -z "$APK" ] || [ ! -f "$APK" ]; then
+                       echo "APK not found at $APK" >&2
+                       find "$GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs" -type f >&2
                        exit 1
                     fi
-                    CLEARGRAHERAPK="$GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/ClearGraher.${{inputs.cleargraher-version}}.apk"
-                    mv "$APK_PATH" "$CLEARGRAHERAPK"
-                    CLEARGRAHERHASH=$(sha256sum "$CLEARGRAHERAPK" | awk '{print $1}')
-                    echo "apk_path=$CLEARGRAHERAPK" >> "$GITHUB_OUTPUT"
-                    echo "apk_sha256=$CLEARGRAHERHASH" >> "$GITHUB_OUTPUT"
+                    OUT="$APK_DIR/ClearGraher-$CLEARGRAHER_VERSION.apk"
+                    mv "$APK" "$OUT"
+                    HASH=$(sha256sum "$OUT" | awk '{print $1}')
+                    SIZE=$(stat -c %s "$OUT")
+                    BODY="$GITHUB_WORKSPACE/release_body.md"
+                    {
+                      echo "# ClearGraher $CLEARGRAHER_VERSION"
+                      echo ""
+                      echo "Telegram/Telegraher fork - no ads, no remote deletions, full control."
+                      echo "Base: Telegraher 12.92.5. Package: org.telegram.messenger.web."
+                      echo ""
+                      echo "## Changelog"
+                      echo ""
+                      awk '/^## \[/{n++} n==1{print} n==2{exit}' "$GITHUB_WORKSPACE/CHANGELOG.md"
+                      echo ""
+                      echo "## Downloads"
+                      echo ""
+                      echo "| APK | Architecture | Size | SHA-256 |"
+                      echo "|---|---|---|---|"
+                      echo "| [ClearGraher-$CLEARGRAHER_VERSION.apk](https://github.com/elizqmill/ClearGraher/releases/download/clearghraher_$CLEARGRAHER_VERSION/ClearGraher-$CLEARGRAHER_VERSION.apk) | universal (all architectures) | $SIZE bytes | \`$HASH\` |"
+                    } > "$BODY"
+                    echo "apk_path=$OUT" >> "$GITHUB_OUTPUT"
+                    echo "body_path=$BODY" >> "$GITHUB_OUTPUT"
+                    echo "APK ready:"
+                    ls -la "$OUT"
             -   name: Create Release and Upload APK
                 uses: softprops/action-gh-release@v3
                 with:
-                    tag_name: ${{env.TNAME}}
-                    name: ${{env.RNAME}}
-                    files: ${{ steps.locate_apk.outputs.apk_path }}
-                    body: |
-                        ClearGraher `${{inputs.cleargraher-version}}` sha256 `${{ steps.locate_apk.outputs.apk_sha256 }}`
-                        Changes:
-                        ${{inputs.cleargraher-changes}}
+                    tag_name: clearghraher_${{inputs.cleargraher-version}}
+                    name: ClearGraher ${{inputs.cleargraher-version}}
+                    files: ${{ steps.prep.outputs.apk_path }}
+                    body_path: ${{ steps.prep.outputs.body_path }}
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                    RNAME: ClearGraher ${{inputs.cleargraher-version}}
-                    TNAME: clearghraher_${{inputs.cleargraher-version}}
