@@ -1,0 +1,82 @@
+name: ClearGraher build
+
+on:
+    workflow_dispatch:
+        inputs:
+            cleargraher-version:
+                description: ClearGraher version bruh
+                type: string
+                default: '0.0.0'
+            cleargraher-changes:
+                description: Tell me bruh
+                type: string
+                default: 'ClearGraher build'
+run-name: Building ClearGraher ${{inputs.cleargraher-version}}
+jobs:
+    apk:
+        name: Generate APK
+        runs-on: ubuntu-latest
+        environment: cleargraherkeys
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v6
+            -   name: Set up AWS Coretto 21
+                uses: actions/setup-java@v5
+                with:
+                    java-version: '21'
+                    distribution: 'corretto'
+                    architecture: x64
+            -   name: Setup Gradle 8.14.5
+                uses: gradle/actions/setup-gradle@v6
+                with:
+                    gradle-version: '8.14.5'
+            -   name: Enable ClearGraher keystore
+                env:
+                    CLEARGRAHER_KEYSTORE_BASE64: ${{secrets.CLEARGRAHER_KEYSTORE_BASE64}}
+                    CLEARGRAHER_RELEASE_STORE_PASSWORD: ${{secrets.CLEARGRAHER_RELEASE_STORE_PASSWORD}}
+                    CLEARGRAHER_RELEASE_KEY_ALIAS: ${{secrets.CLEARGRAHER_RELEASE_KEY_ALIAS}}
+                    CLEARGRAHER_RELEASE_KEY_PASSWORD: ${{secrets.CLEARGRAHER_RELEASE_KEY_PASSWORD}}
+                run: |
+                    mv $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore.old
+                    echo "$CLEARGRAHER_KEYSTORE_BASE64" | base64 --decode > $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore
+                    cp $GITHUB_WORKSPACE/gradle.properties $GITHUB_WORKSPACE/gradle.properties.old
+                    sed -i "s/RELEASE_STORE_PASSWORD=android/RELEASE_STORE_PASSWORD=$CLEARGRAHER_RELEASE_STORE_PASSWORD/g" $GITHUB_WORKSPACE/gradle.properties
+                    sed -i "s/RELEASE_KEY_ALIAS=androidkey/RELEASE_KEY_ALIAS=$CLEARGRAHER_RELEASE_KEY_ALIAS/g" $GITHUB_WORKSPACE/gradle.properties
+                    sed -i "s/RELEASE_KEY_PASSWORD=android/RELEASE_KEY_PASSWORD=$CLEARGRAHER_RELEASE_KEY_PASSWORD/g" $GITHUB_WORKSPACE/gradle.properties
+            -   name: Build APK
+                run: gradle :TMessagesProj_AppStandalone:assembleStandalone
+            -   name: Disable ClearGraher keystore
+                if: always()
+                run: |
+                    rm $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore
+                    mv $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore.old $GITHUB_WORKSPACE/TMessagesProj/config/release.keystore
+                    rm $GITHUB_WORKSPACE/gradle.properties
+                    mv $GITHUB_WORKSPACE/gradle.properties.old $GITHUB_WORKSPACE/gradle.properties
+            -   name: Verify APK exists
+                id: locate_apk
+                run: |
+                    APK_PATH="$GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/app.apk"
+                    if [ ! -f "$APK_PATH" ]; then
+                       echo "Expected APK not found at $APK_PATH — listing actual output tree:" >&2
+                       find $GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs -type f >&2
+                       exit 1
+                    fi
+                    CLEARGRAHERAPK="$GITHUB_WORKSPACE/TMessagesProj_AppStandalone/build/outputs/apk/afat/standalone/ClearGraher.${{inputs.cleargraher-version}}.apk"
+                    mv "$APK_PATH" "$CLEARGRAHERAPK"
+                    CLEARGRAHERHASH=$(sha256sum "$CLEARGRAHERAPK" | awk '{print $1}')
+                    echo "apk_path=$CLEARGRAHERAPK" >> "$GITHUB_OUTPUT"
+                    echo "apk_sha256=$CLEARGRAHERHASH" >> "$GITHUB_OUTPUT"
+            -   name: Create Release and Upload APK
+                uses: softprops/action-gh-release@v3
+                with:
+                    tag_name: ${{env.TNAME}}
+                    name: ${{env.RNAME}}
+                    files: ${{ steps.locate_apk.outputs.apk_path }}
+                    body: |
+                        ClearGraher `${{inputs.cleargraher-version}}` sha256 `${{ steps.locate_apk.outputs.apk_sha256 }}`
+                        Changes:
+                        ${{inputs.cleargraher-changes}}
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    RNAME: ClearGraher ${{inputs.cleargraher-version}}
+                    TNAME: clearghraher_${{inputs.cleargraher-version}}

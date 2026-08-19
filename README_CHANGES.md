@@ -1,8 +1,14 @@
 # Changes
 
-## Stop fucking war in Ukraine.
+## ClearGraher
 
-## Stop fucking genocide in Gaza.
+* renamed to ClearGraher
+* restored RU (Russian Federation) and IL (Israel) in the country list
+  * login/registration works with RU and IL numbers again
+* removed political renames ("Slava Ukraini" / "Free Palestine) from the login flow
+* updated links and README
+
+___
 
 * 12.92.5 (build 6991005)
     * removing mlkit

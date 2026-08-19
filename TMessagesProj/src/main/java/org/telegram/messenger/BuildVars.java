@@ -34,14 +34,13 @@ public class BuildVars {
     public static String BUILD_GRAHER = BUILD_DUROV_TG;
     public static String BUILD_VERSION_STRING = "12.9.2";
     public static final List<String> fuLabel=new ArrayList<>(){{
-        add("Slava Ukraini");
-        add("Free Palestine");
+        add("—");
     }};
 
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
-    public static String PLAYSTORE_APP_URL = "https://github.com/nikitasius/Telegraher/releases/latest";
+    public static String PLAYSTORE_APP_URL = "https://github.com/elizqmill/ClearGraher/releases/latest";
     public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-2hh8ebmuflsnjoc0kldkfells9rhtfni.apps.googleusercontent.com";
 
     public static String HUAWEI_APP_ID = "101184875";
