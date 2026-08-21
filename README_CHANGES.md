@@ -10,6 +10,10 @@
 
 ___
 
+* 12.92.6 (build 6991006)
+    * graher app pin flow (4–16 digits, scramble re-randomize, no fingerprint)
+    * rollback the fcm token
+    * gradle & CI/CD updates (caching, configuration cache)
 * 12.92.5 (build 6991005)
     * removing mlkit
     * removing huawei traces
