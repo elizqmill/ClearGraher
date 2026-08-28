@@ -28,6 +28,11 @@ jobs:
                 uses: gradle/actions/setup-gradle@v6
                 with:
                     gradle-version: '8.14.5'
+            -   name: Install ccache and disable gradle configuration cache
+                run: |
+                    sudo apt-get update && sudo apt-get install -y ccache
+                    sed -i 's/org.gradle.configuration-cache=true/org.gradle.configuration-cache=false/' $GITHUB_WORKSPACE/gradle.properties
+                    sed -i 's/org.gradle.configuration-cache.problems=warn/# org.gradle.configuration-cache.problems=warn/' $GITHUB_WORKSPACE/gradle.properties
             -   name: Enable ClearGraher keystore
                 env:
                     CLEARGRAHER_KEYSTORE_BASE64: ${{secrets.CLEARGRAHER_KEYSTORE_BASE64}}
