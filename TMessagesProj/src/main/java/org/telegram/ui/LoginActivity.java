@@ -2012,16 +2012,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
                 fragment.setCountrySelectActivityDelegate((country) -> {
                     selectCountry(country);
-                    country.defaultName = switch (country.code) {
-                        case "7" -> "Slava Ukraini";
-                        case "972" -> "Free Palestine";
-                        default -> country.defaultName;
-                    };
-                    country.name = switch (country.code) {
-                        case "7" -> "Slava Ukraini";
-                        case "972" -> "Free Palestine";
-                        default -> country.name;
-                    };
                     AndroidUtilities.runOnUIThread(() -> showKeyboard(phoneField), 300);
                     phoneField.requestFocus();
                     phoneField.setSelection(phoneField.length());
@@ -2528,22 +2518,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 TLRPC.TL_help_countryCode countryCode = c.country_codes.get(k);
                                 if (countryCode != null) {
                                     CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
-
-                                    switch (countryCode.country_code) {
-                                        case "7" -> {
-                                            countryWithCode.name = "Slava Ukraini";
-                                            countryWithCode.defaultName = "Slava Ukraini";
-                                        }
-                                        case "972" -> {
-                                            countryWithCode.name = "Free Palestine";
-                                            countryWithCode.defaultName = "Free Palestine";
-                                        }
-                                        default -> {
-                                            countryWithCode.name = c.name;
-                                            countryWithCode.defaultName = c.default_name;
-                                        }
-                                    }
-
+                                    countryWithCode.name = c.name;
+                                    countryWithCode.defaultName = c.default_name;
                                     if (countryWithCode.name == null && countryWithCode.defaultName != null) {
                                         countryWithCode.name = countryWithCode.defaultName;
                                     }

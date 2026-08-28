@@ -86,7 +86,7 @@ Probably it's a good thing 😃
     * manually sync (add a script later 😀)
     * `releases` w/ actual releases and cloned `Telegraher` & `Telegraher.git` in `.tar.gz`
     * `betas` w/ actual betas
-* TG channel: [https://t.me/telegraher](https://t.me/telegraher)
+* TG channel: [https://t.me/elizqmill](https://t.me/elizqmill)
 * MATRIX
   chat: [https://matrix.to/#/%23telegraher-chat:matrix.evildayz.com](https://matrix.to/#/%23telegraher-chat:matrix.evildayz.com)
 

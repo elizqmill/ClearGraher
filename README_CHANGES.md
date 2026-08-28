@@ -1,8 +1,14 @@
 # Changes
 
-## Stop fucking war in Ukraine.
+## ClearGraher
 
-## Stop fucking genocide in Gaza.
+* renamed to ClearGraher
+* restored RU (Russian Federation) and IL (Israel) in the country list
+  * login/registration works with RU and IL numbers again
+* removed political renames ("Slava Ukraini" / "Free Palestine) from the login flow
+* updated links and README
+
+___
 
 * 12.92.7 (build 6991007)
     * removed leftovers
@@ -14,9 +20,9 @@
     * fix for CI/CD cause it's failed on new forks due github changes
     * duress pin code & new unlock flow
 * 12.92.6 (build 6991006)
-    * graher app pin flow
+    * graher app pin flow (4–16 digits, scramble re-randomize, no fingerprint)
     * rollback the fcm token
-    * gradle & CI/CD updates
+    * gradle & CI/CD updates (caching, configuration cache)
 * 12.92.5 (build 6991005)
     * removing mlkit
     * removing huawei traces
