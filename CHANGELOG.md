@@ -2,6 +2,31 @@
 
 All notable changes to ClearGraher are documented in this file.
 
+## [1.0.3] - 2026-08-29
+
+Updated to Telegraher 12.92.9 (build 6991009).
+
+### Added
+- Unlimited multi-account: log in with the same phone number multiple times.
+- TTL media flow in green and private chats: nudes last forever, screenshots allowed when PIN is enabled.
+- "Kill the APP" button on profile to force-kill the app.
+
+### Changed
+- Base: Telegraher 12.92.7 → 12.92.9 (skipping 12.92.8 features merged together).
+- Multi-acc: unlimited accounts with same phone number.
+- TTL media: new flow for self-destructing media in secret/green chats, screenshots allowed with PIN.
+- "Kill the APP" button on profile.
+
+### Removed
+- Legacy leftovers (CI/CD debug commits cleaned up).
+
+### ClearGraher (persists from 1.0.0)
+- Restored RU and IL to login/registration country list.
+- Removed political renames ("Slava Ukraini" / "Free Palestine").
+- Neutralized `BuildVars.fuLabel`.
+- App renamed to ClearGraher, links point to https://t.me/elizqmill.
+- Own signing keystore in GitHub Actions secrets.
+
 ## [1.0.2] - 2026-08-28
 
 Updated to Telegraher 12.92.7 (build 6991007).
