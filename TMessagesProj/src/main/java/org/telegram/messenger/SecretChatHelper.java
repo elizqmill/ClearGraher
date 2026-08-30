@@ -80,19 +80,10 @@ public class SecretChatHelper extends BaseController {
     private ArrayList<Long> pendingEncMessagesToDelete = new ArrayList<>();
     private boolean startingSecretChat = false;
 
-    private static volatile SecretChatHelper[] Instance = new SecretChatHelper[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final ConcurrentHashMap<Integer, SecretChatHelper> Instance = new ConcurrentHashMap();
 
     public static SecretChatHelper getInstance(int num) {
-        SecretChatHelper localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (SecretChatHelper.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new SecretChatHelper(num);
-                }
-            }
-        }
-        return localInstance;
+        return Instance.computeIfAbsent(num, SecretChatHelper::new);
     }
 
     public SecretChatHelper(int instance) {
@@ -1163,10 +1154,7 @@ public class SecretChatHelper extends BaseController {
                     }
                     return null;
                 } else if (serviceMessage.action instanceof TLRPC.TL_decryptedMessageActionReadMessages) {
-                    if (!serviceMessage.action.random_ids.isEmpty()) {
-                        int time = getConnectionsManager().getCurrentTime();
-                        getMessagesStorage().createTaskForSecretChat(chat.id, time, time, 1, serviceMessage.action.random_ids);
-                    }
+                   //empty for easy cherrypicking
                 } else if (serviceMessage.action instanceof TLRPC.TL_decryptedMessageActionNotifyLayer) {
                     applyPeerLayer(chat, serviceMessage.action.layer);
                 } else if (serviceMessage.action instanceof TLRPC.TL_decryptedMessageActionRequestKey) {

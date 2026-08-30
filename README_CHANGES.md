@@ -10,6 +10,12 @@
 
 ___
 
+* 12.92.9 (build 6991009)
+    * new flow for TTL medias in green and private chats
+    * "Kill the APP" button on profile to kill the app
+* 12.92.8 (build 6991008)
+    * brand new unlimited multiacc
+    * you can login with same number multiple times
 * 12.92.7 (build 6991007)
     * removed leftovers
     * Monet theme for android 12+ by @soyelmismo (github)
