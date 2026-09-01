@@ -110,7 +110,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            outputFileName = "app.apk"
+            outputFileName = "ClearGraher-" + APP_VERSION_NAME + ".apk"
             output.versionCodeOverride = defaultConfig.versionCode
         }
     }

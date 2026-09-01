@@ -253,51 +253,11 @@ public class UserConfig extends BaseController {
     }
 
     public void setCurrentUser(TLRPC.User user) {
-        final boolean becameActive;
         synchronized (sync) {
             TLRPC.User oldUser = currentUser;
             currentUser = user;
             clientUserId = user.id;
             checkPremiumSelf(oldUser, user);
-            becameActive = currentUser != null;
-        }
-        applyAccountActivation(becameActive);
-    }
-
-//    public void syncAccount() {
-//        final boolean activated;
-//        synchronized (sync) {
-//            activated = currentUser != null;
-//        }
-//        applyAccountActivation(activated);
-//    }
-
-    private void applyAccountActivation(boolean activated) {
-        boolean changed;
-        if (activated) {
-            changed = SharedConfig.activeAccounts.add(currentAccount);
-        } else {
-            changed = SharedConfig.activeAccounts.remove(currentAccount);
-        }
-        if (!changed) {
-            if (activated) {
-                attachAccountDelegates();
-            }
-            return;
-        }
-        SharedConfig.saveAccounts();
-        if (activated) {
-            attachAccountDelegates();
-        }
-    }
-
-    private void attachAccountDelegates() {
-        if (ImageLoader.hasInstance()) {
-            ImageLoader.getInstance().checkAccount(currentAccount);
-        }
-        MediaController mc = MediaController.getInstance();
-        if (mc != null) {
-            mc.checkAccount(currentAccount);
         }
     }
 
@@ -411,7 +371,6 @@ public class UserConfig extends BaseController {
             }
             configLoaded = true;
         }
-        applyAccountActivation(currentUser != null);
     }
 
     public boolean isConfigLoaded() {
@@ -500,7 +459,6 @@ public class UserConfig extends BaseController {
         lastMyLocationShareTime = 0;
         currentUser = null;
         clientUserId = 0;
-        applyAccountActivation(false);
         registeredForPush = false;
         contactsSavedCount = 0;
         lastSendMessageId = -210000;

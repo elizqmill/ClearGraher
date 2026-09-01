@@ -1,14 +1,15 @@
 # Changes
 
-## Stop fucking war in Ukraine.
+## ClearGraher
 
-## Stop fucking genocide in Gaza.
+* renamed to ClearGraher
+* restored RU (Russian Federation) and IL (Israel) in the country list
+  * login/registration works with RU and IL numbers again
+* removed political renames ("Slava Ukraini" / "Free Palestine) from the login flow
+* updated links and README
 
-* 12.92.10 (build 6991010)
-    * ideas from pr-183 to fix unfinity file sending on high android versions (16, more issues on 17)
-    * fix for android 17 grapheneos
-    * packahe fix in contactcontroller
-    * manifest update, missed intents (thank grok)
+___
+
 * 12.92.9 (build 6991009)
     * new flow for TTL medias in green and private chats
     * "Kill the APP" button on profile to kill the app
@@ -25,9 +26,9 @@
     * fix for CI/CD cause it's failed on new forks due github changes
     * duress pin code & new unlock flow
 * 12.92.6 (build 6991006)
-    * graher app pin flow
+    * graher app pin flow (4–16 digits, scramble re-randomize, no fingerprint)
     * rollback the fcm token
-    * gradle & CI/CD updates
+    * gradle & CI/CD updates (caching, configuration cache)
 * 12.92.5 (build 6991005)
     * removing mlkit
     * removing huawei traces

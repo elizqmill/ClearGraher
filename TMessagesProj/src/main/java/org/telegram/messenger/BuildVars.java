@@ -34,8 +34,7 @@ public class BuildVars {
     public static String BUILD_GRAHER = BUILD_DUROV_TG;
     public static String BUILD_VERSION_STRING = "12.9.2";
     public static final List<String> fuLabel=new ArrayList<>(){{
-        add("Slava Ukraini");
-        add("Free Palestine");
+        add("—");
     }};
 
     public static final int PIN_MIN_SIZE = 4;
@@ -45,7 +44,7 @@ public class BuildVars {
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
-    public static String PLAYSTORE_APP_URL = "https://github.com/nikitasius/Telegraher/releases/latest";
+    public static String PLAYSTORE_APP_URL = "https://github.com/elizqmill/ClearGraher/releases/latest";
     public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
 
     // You can use this flag to disable Google Play Billing (If you're making fork and want it to be in Google Play)

@@ -1534,19 +1534,6 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public void checkAccount(final int a) {
-        AndroidUtilities.runOnUIThread(() -> {
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.fileLoaded);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.httpFileDidLoad);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.didReceiveNewMessages);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.messagesDeleted);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.removeAllMessagesFromDialog);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicDidLoad);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.mediaDidLoad);
-            NotificationCenter.getInstance(a).addObserver(MediaController.this, NotificationCenter.musicListLoaded);
-        });
-    }
-
     @Override
     public void onAudioFocusChange(int focusChange) {
         AndroidUtilities.runOnUIThread(() -> {
@@ -6099,18 +6086,18 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 count++;
             } while (f.exists());
             inputStream = ApplicationLoader.applicationContext.getContentResolver().openInputStream(uri);
-//            if (inputStream instanceof FileInputStream) {
-//                FileInputStream fileInputStream = (FileInputStream) inputStream;
-//                try {
-//                    Method getInt = FileDescriptor.class.getDeclaredMethod("getInt$");
-//                    int fdint = (Integer) getInt.invoke(fileInputStream.getFD());
-//                    if (AndroidUtilities.isInternalUri(fdint)) {
-//                        return null;
-//                    }
-//                } catch (Throwable e) {
-//                    FileLog.e(e);
-//                }
-//            }
+            if (inputStream instanceof FileInputStream) {
+                FileInputStream fileInputStream = (FileInputStream) inputStream;
+                try {
+                    Method getInt = FileDescriptor.class.getDeclaredMethod("getInt$");
+                    int fdint = (Integer) getInt.invoke(fileInputStream.getFD());
+                    if (AndroidUtilities.isInternalUri(fdint)) {
+                        return null;
+                    }
+                } catch (Throwable e) {
+                    FileLog.e(e);
+                }
+            }
             output = new FileOutputStream(f);
             byte[] buffer = new byte[1024 * 20];
             int len;
